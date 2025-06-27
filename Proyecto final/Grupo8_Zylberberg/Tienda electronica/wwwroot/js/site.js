@@ -26,14 +26,14 @@ $(function () {
         }
         var btn = $(this);
         if (tipo === 'Cliente') {
-            window.location.href = btn.data('client-url');
+            window.location.href = btn.data('clientUrl');
         } else {
             var code = $('#adminCode').val();
             if (!code) {
                 alert('Ingrese el código de administrador');
                 return;
             }
-            var adminUrl = btn.data('admin-url');
+            var adminUrl = btn.data('adminUrl');
             window.location.href = adminUrl + '?adminCode=' + encodeURIComponent(code);
         }
     });
