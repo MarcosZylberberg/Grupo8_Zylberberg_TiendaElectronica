@@ -1,0 +1,134 @@
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Carta Restobar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <a href="#reserva" style="text-decoration: none; color: inherit;">
+      <h1>La Cava Restobar</h1>
+      <p>Sabores únicos, ambiente especial — ¡Reservá tu mesa aquí!</p>
+    </a>
+  </header>
+
+  <nav>
+    <a href="#entradas">Entradas</a>
+    <a href="#principales">Platos Principales</a>
+    <a href="#bebidas">Bebidas</a>
+    <a href="#postres">Postres</a>
+  </nav>
+
+  <section id="entradas" class="bg-entradas">
+    <div class="contenido">
+      <h2>Entradas</h2>
+      <ul>
+        <li>
+          <img src="images/Bruschettas.jpg" alt="Bruschettas">
+          <div class="item-text">Bruschettas de tomate y albahaca <span class="precio">$1200</span></div>
+        </li>
+        <li>
+          <img src="images/Fiambres.jpg" alt="Tabla de fiambres">
+          <div class="item-text">Tabla de fiambres y quesos <span class="precio">$2500</span></div>
+        </li>
+        <li>
+          <img src="images/Empanadas.jpg" alt="Empanadas">
+          <div class="item-text">Empanadas criollas (2 unidades) <span class="precio">$1000</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="principales" class="bg-principales">
+    <div class="contenido">
+      <h2>Platos Principales</h2>
+      <ul>
+        <li>
+          <img src="images/BifeChorizo.jpg" alt="Bife de chorizo">
+          <div class="item-text">Bife de chorizo con papas rústicas <span class="precio">$5200</span></div>
+        </li>
+        <li>
+          <img src="images/PechugaRellena.jpg" alt="Pechuga rellena">
+          <div class="item-text">Pechuga rellena con vegetales salteados <span class="precio">$4300</span></div>
+        </li>
+        <li>
+          <img src="images/Risotto.jpg" alt="Risotto">
+          <div class="item-text">Risotto de hongos y parmesano <span class="precio">$3900</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="bebidas" class="bg-bebidas">
+    <div class="contenido">
+      <h2>Bebidas</h2>
+      <ul>
+        <li>
+          <img src="images/Agua.jpg" alt="Agua">
+          <div class="item-text">Agua sin gas / con gas <span class="precio">$800</span></div>
+        </li>
+        <li>
+          <img src="images/Birra.jpg" alt="Cerveza">
+          <div class="item-text">Cerveza artesanal (500ml) <span class="precio">$1300</span></div>
+        </li>
+        <li>
+          <img src="images/Vino.jpg" alt="Malbec">
+          <div class="item-text">Malbec (copa) <span class="precio">$1500</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="postres" class="bg-postres">
+    <div class="contenido">
+      <h2>Postres</h2>
+      <ul>
+        <li>
+          <img src="images/Flan.jpg" alt="Flan">
+          <div class="item-text">Flan casero con dulce de leche <span class="precio">$1200</span></div>
+        </li>
+        <li>
+          <img src="images/Mousse.jpg" alt="Mousse">
+          <div class="item-text">Mousse de chocolate amargo <span class="precio">$1400</span></div>
+        </li>
+        <li>
+          <img src="images/Cheesecake.jpg" alt="Cheesecake">
+          <div class="item-text">Cheesecake de frutos rojos <span class="precio">$1600</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="reserva" class="bg-reserva">
+    <div class="contenido">
+      <h2>Reservá tu mesa</h2>
+      <form class="form-reserva" id="reservaForm">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre">
+  
+        <label for="telefono">Teléfono:</label>
+        <input type="tel" id="telefono" name="telefono">
+  
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+  
+        <label for="hora">Hora:</label>
+        <input type="time" id="hora" name="hora">
+  
+        <label for="personas">Cantidad de personas:</label>
+        <input type="number" id="personas" name="personas" min="1">
+  
+        <button type="submit">Enviar Reserva</button>
+      </form>
+      <script src="validaciones.js"></script>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 La Cava Restobar — Todos los derechos reservados</p>
+  </footer>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    Layout = "_Layout";
+}
+<section class="hero-section text-center py-5">
+    <div class="container">
+        <a asp-controller="Productos" asp-action="Index" class="btn btn-black btn-lg"> Comprar ahora </a>
+    </div>
+</section>
+
+<section class="product-gallery py-5 text-center">
+    <div class="container">
+        <img src="~/images/imagenProductos.png"
+             class="img-fluid"
+             alt="Productos destacados" />
+    </div>
+</section>
