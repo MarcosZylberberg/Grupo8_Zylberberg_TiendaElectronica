@@ -13,10 +13,12 @@ namespace Tienda_electronica.Controllers
     public class ProductosController : Controller
     {
         private readonly TiendaElectronicaDatabaseContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public ProductosController(TiendaElectronicaDatabaseContext context)
+        public ProductosController(TiendaElectronicaDatabaseContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: Productos
@@ -54,15 +56,47 @@ namespace Tienda_electronica.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdProducto,Nombre,Descripcion,Precio,CantidadStock,Imagen")] Producto producto)
+        public async Task<IActionResult> Create(Producto producto, IFormFile? ImagenFile)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(producto);
+
+            if (ImagenFile != null && ImagenFile.Length > 0)
             {
-                _context.Add(producto);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // 1) Carpeta de destino
+                var uploadsDir = Path.Combine(_env.WebRootPath, "images");
+                Directory.CreateDirectory(uploadsDir);
+
+                // 2) Saca la extensión original
+                var extension = Path.GetExtension(ImagenFile.FileName);
+
+                // 3) Construye un nombre “seguro” a partir del nombre del producto
+                //    elimina espacios y caracteres no admitidos
+                var safeName = string.Concat(
+                    producto.Nombre
+                        .ToLowerInvariant()
+                        .Where(c => !Path.GetInvalidFileNameChars().Contains(c))
+                        .Select(c => c == ' ' ? '_' : c)
+                );
+
+                // 4) (Opcional) Evita colisiones añadiendo timestamp
+                var timestamp = DateTime.Now.ToString("yyyyMMdd");
+
+                // 5) Monta el nombre final
+                var fileName = $"{safeName}_{timestamp}{extension}";
+
+                // 6) Guarda el fichero
+                var filePath = Path.Combine(uploadsDir, fileName);
+                using var fs = new FileStream(filePath, FileMode.Create);
+                await ImagenFile.CopyToAsync(fs);
+
+                // 7) Guarda ese nombre en la BD
+                producto.Imagen = fileName;
             }
-            return View(producto);
+
+            await _context.Productos.AddAsync(producto);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Productos/Edit/5
@@ -86,34 +120,27 @@ namespace Tienda_electronica.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdProducto,Nombre,Descripcion,Precio,CantidadStock,Imagen")] Producto producto)
+        public async Task<IActionResult> Edit(int id, [Bind("IdProducto,Nombre,Descripcion,Precio,CantidadStock,Imagen,EsDestacado")] Producto producto)
         {
             if (id != producto.IdProducto)
-            {
                 return NotFound();
+
+            if (!ModelState.IsValid)
+                return View(producto);
+
+            try
+            {
+                _context.Update(producto);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Productos.Any(e => e.IdProducto == producto.IdProducto))
+                    return NotFound();
+                throw;
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(producto);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductoExists(producto.IdProducto))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(producto);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Productos/Delete/5

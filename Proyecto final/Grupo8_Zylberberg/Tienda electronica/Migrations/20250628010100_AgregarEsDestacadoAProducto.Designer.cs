@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tienda_electronica.Context;
 
@@ -11,9 +12,11 @@ using Tienda_electronica.Context;
 namespace Tienda_electronica.Migrations
 {
     [DbContext(typeof(TiendaElectronicaDatabaseContext))]
-    partial class TiendaElectronicaDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250628010100_AgregarEsDestacadoAProducto")]
+    partial class AgregarEsDestacadoAProducto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,7 @@ namespace Tienda_electronica.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Imagen")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")

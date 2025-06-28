@@ -60,7 +60,7 @@ namespace Tienda_electronica.Controllers
             {
                 _context.Add(cliente);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             return View(cliente);
         }

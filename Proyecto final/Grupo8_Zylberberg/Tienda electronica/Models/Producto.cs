@@ -22,6 +22,13 @@ namespace Tienda_electronica.Models
         [Required]
         public int CantidadStock { get; set; }
 
-        public string Imagen { get; set; }
+        public string? Imagen { get; set; }
+
+        [Display(Name = "Destacado")]
+        public bool EsDestacado { get; set; } = false;
+
+        // Esta NO se mapea a BD, solo se usa para bind en el form
+        [NotMapped]
+        public IFormFile? ImagenFile { get; set; }
     }
 }

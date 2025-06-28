@@ -1,6 +1,5 @@
-﻿// wwwroot/js/site.js
-
-$(function () {
+﻿$(function () {
+    // ===== Registro Modal =====
     // Al abrir el modal, resetear inputs
     $('#registerModal').on('show.bs.modal', function () {
         $('input[name="registerType"]').prop('checked', false);
@@ -36,5 +35,23 @@ $(function () {
             var adminUrl = btn.data('adminUrl');
             window.location.href = adminUrl + '?adminCode=' + encodeURIComponent(code);
         }
+    });
+
+    // ===== Login Modal =====
+    var $loginModal = $('#LoginModal');
+
+    // Si hay un error, lo abrimos
+    if ($loginModal.find('.alert-danger').length > 0) {
+        new bootstrap.Modal($loginModal.get(0)).show();
+    }
+
+    // Al cerrar el modal, limpiamos alerta, backdrop y clase modal-open
+    $loginModal.on('hidden.bs.modal', function () {
+        // 1) quitar el mensaje de error
+        $(this).find('.alert-danger').remove();
+        // 2) quitar el backdrop que queda “flotando”
+        $('.modal-backdrop').remove();
+        // 3) quitar la clase que inmoviliza el scroll del body
+        $('body').removeClass('modal-open');
     });
 });

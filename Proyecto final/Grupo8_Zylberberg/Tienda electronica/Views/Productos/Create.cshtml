@@ -1,16 +1,26 @@
 ﻿@model Tienda_electronica.Models.Producto
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Producto";
 }
 
-<h1>Create</h1>
-
-<h4>Producto</h4>
+<h1>Create Producto</h1>
 <hr />
+@if (ViewData["Errores"] is List<string> errs)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var e in errs)
+            {
+                <li>@e</li>
+            }
+        </ul>
+    </div>
+}
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Nombre" class="control-label"></label>
@@ -33,9 +43,9 @@
                 <span asp-validation-for="CantidadStock" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Imagen" class="control-label"></label>
-                <input asp-for="Imagen" class="form-control" />
-                <span asp-validation-for="Imagen" class="text-danger"></span>
+                <label asp-for="ImagenFile">Imagen</label>
+                <input asp-for="ImagenFile" type="file" class="form-control" accept="image/*" />
+                <span asp-validation-for="ImagenFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

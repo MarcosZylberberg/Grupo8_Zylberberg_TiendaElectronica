@@ -1,17 +1,59 @@
-﻿@{
+﻿@model List<Tienda_electronica.Models.Producto>
+
+@{
     ViewData["Title"] = "Inicio";
     Layout = "_Layout";
 }
-<section class="hero-section text-center py-5">
-    <div class="container">
-        <a asp-controller="Productos" asp-action="Index" class="btn btn-black btn-lg"> Comprar ahora </a>
-    </div>
-</section>
 
-<section class="product-gallery py-5 text-center">
-    <div class="container">
-        <img src="~/images/imagenProductos.png"
-             class="img-fluid"
-             alt="Productos destacados" />
+<section class="home-index">
+
+    <!-- 1) Bienvenida -->
+    <div class="hero-section d-flex align-items-center justify-content-center text-center"
+         style="background: url('/images/imagenProductos.png') no-repeat center/cover; height: 60vh;">
+        <div class="container">
+            <h1 class="display-4 text-white mb-3">Bienvenido a Okidoki</h1>
+            <p class="lead text-white mb-4">Los mejores dispositivos electrónicos al alcance de un clic</p>
+        </div>
     </div>
+
+    <!-- 2) Productos Destacados -->
+    <div class="product-gallery py-5">
+        <div class="container">
+            <h2 class="mb-4 text-center">Productos Destacados</h2>
+            <div class="row gx-4 gy-4">
+                @foreach (var prod in Model)
+                {
+                    <div class="col-md-4">
+                        <a asp-controller="Productos"asp-action="Details" asp-route-id="@prod.IdProducto" class="text-decoration-none d-block h-100">
+                            <div class="card h-100 shadow-sm">
+                                <!-- Aquí usamos image-card en el wrapper -->
+                                <div class="image-card">
+                                    <img src="/images/@prod.Imagen"
+                                         alt="@prod.Nombre" />
+                                    <div class="overlay">Ver @prod.Nombre</div>
+                                </div>
+
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title mb-2 text-dark">@prod.Nombre</h5>
+                                    <p class="card-text fw-bold mb-3">@prod.Precio.ToString("C")</p>
+                                    <button class="btn btn-sm btn-black mt-auto w-100">
+                                        Ver detalle
+                                    </button>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 3) Botón de Comprar Ahora -->
+    <div class="text-center py-5">
+        <a asp-controller="Productos" asp-action="Index"
+           class="btn btn-primary btn-lg">
+            Comprar ahora
+        </a>
+    </div>
+
 </section>
