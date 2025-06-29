@@ -11,7 +11,9 @@ namespace Tienda_electronica.Models
         public int IdPedido { get; set; }
 
         [Required]
+        [ForeignKey(nameof(Cliente))]
         public int IdCliente { get; set; }
+
         public Cliente Cliente { get; set; }
 
         [Required]

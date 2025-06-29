@@ -10,7 +10,7 @@ namespace Tienda_electronica.Context
 {
     public class TiendaElectronicaDatabaseContext : DbContext
     {
-        public TiendaElectronicaDatabaseContext(DbContextOptions<TiendaElectronicaDatabaseContext>options) : base(options)
+        public TiendaElectronicaDatabaseContext(DbContextOptions<TiendaElectronicaDatabaseContext> options) : base(options)
         {
         }
         public DbSet<Usuario> Usuarios { get; set; }

@@ -1,59 +1,103 @@
-﻿@model IEnumerable<Tienda_electronica.Models.Producto>
-
+﻿@using System.Security.Claims
+@model IEnumerable<Tienda_electronica.Models.Producto>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Productos";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<h1 class="text-center mb-4">Productos</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descripcion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Precio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CantidadStock)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Imagen)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CantidadStock)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Imagen)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdProducto">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdProducto">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdProducto">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="product-gallery py-5">
+    <div class="container">
+        <!-- Grid 4 columnas, 20 por página -->
+        <div class="row gx-4 gy-4" id="productsContainer">
+            @foreach (var prod in Model)
+            {
+                <div class="col-6 col-md-3 product-item">
+                    <div class="card h-100 shadow-sm">
+                        <div class="image-card">
+                            <img src="~/images/@prod.Imagen"
+                                 alt="@prod.Nombre" />
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title mb-1">@prod.Nombre</h6>
+                            <p class="card-text fw-bold mb-2">@prod.Precio.ToString("C")</p>
+
+                            <div class="mt-auto">
+                                <a asp-controller="Productos"
+                                   asp-action="Details"
+                                   asp-route-id="@prod.IdProducto"
+                                   class="btn btn-sm btn-black w-100 mb-1">
+                                    Detalles
+                                </a>
+
+                                @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Usuario"))
+                                {
+                                    <a asp-controller="Productos"
+                                       asp-action="Edit"
+                                       asp-route-id="@prod.IdProducto"
+                                       class="btn btn-sm btn-primary w-100 mb-1">
+                                        Editar
+                                    </a>
+                                    <form asp-controller="Productos"
+                                          asp-action="Delete"
+                                          asp-route-id="@prod.IdProducto"
+                                          method="post"
+                                          class="delete-form mb-0">
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger w-100 btn-delete">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                }
+                                else if (User.Identity?.IsAuthenticated == true && User.IsInRole("Cliente"))
+                                {
+                                    <form asp-controller="Pedidos"
+                                          asp-action="AddToCart"
+                                          asp-route-productoId="@prod.IdProducto"
+                                          method="post"
+                                          class="mb-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                                            Agregar al pedido
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Paginación -->
+        <nav>
+            <ul class="pagination justify-content-center mt-4" id="pagination"></ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal Confirmación de Eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro que deseas eliminar este producto?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/site.js" asp-append-version="true"></script>

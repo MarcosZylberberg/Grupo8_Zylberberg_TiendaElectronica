@@ -1,53 +1,120 @@
 ﻿@model IEnumerable<Tienda_electronica.Models.Pedido>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Mis Pedidos";
+    Layout = "_Layout";
+    var esUsuario = User.IsInRole("Usuario");
 }
 
-<h1>Index</h1>
+<div class="container py-5">
+    <h1 class="mb-4">Mis Pedidos</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdCliente)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.completado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fecha)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.metodo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCliente)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.completado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.metodo)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPedido">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPedido">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPedido">Delete</a>
-            </td>
-        </tr>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No tienes pedidos todavía.
+            <a asp-controller="Productos" asp-action="Index">Ver productos</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" id="pedidoContainer">
+            @foreach (var pedido in Model)
+            {
+                <div class="col-sm-12 col-md-6 pedido-card">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <div class="d-flex justify-content-between">
+                                <strong>Pedido #@pedido.IdPedido</strong>
+                                @if (pedido.completado)
+                                {
+                                    <span class="badge bg-success">Completado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Abierto</span>
+                                }
+                            </div>
+                            <small>Fecha: @pedido.Fecha.ToString("g")</small>
+                        </div>
+
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="mb-3">Ítems (@pedido.Detalles.Count)</h6>
+
+                            <div class="table-responsive mb-3" style="flex:1 0 auto;">
+                                <table class="table table-sm align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var det in pedido.Detalles)
+                                        {
+                                            <tr>
+                                                <td>@det.Producto.Nombre</td>
+                                                <td class="text-center" style="width:120px;">
+                                                    @if (!pedido.completado)
+                                                    {
+                                                        <input
+                                                            type="number"
+                                                            name="cantidad"
+                                                            class="form-control form-control-sm cantidad-input"
+                                                            style="width:60px; margin:auto;"
+                                                            min="1"
+                                                            value="@det.Cantidad"
+                                                            data-unit-price="@det.PrecioUnitario"
+                                                        />
+                                                    }
+                                                    else
+                                                    {
+                                                        @det.Cantidad
+                                                    }
+                                                </td>
+                                                <td class="text-end det-subtotal">
+                                                    @((det.Cantidad * det.PrecioUnitario).ToString("C"))
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="mt-auto">
+                                <a asp-action="Details"
+                                   asp-route-id="@pedido.IdPedido"
+                                   class="btn btn-sm btn-outline-primary w-100 mb-2">
+                                    Ver detalles completos
+                                </a>
+                                @if (esUsuario)
+                                {
+                                    <a asp-action="Edit"
+                                       asp-route-id="@pedido.IdPedido"
+                                       class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                                        Editar pedido
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="card-footer text-end">
+                            <strong>Total: </strong>
+                            <span class="pedido-total">@pedido.Total.ToString("C")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- paginación -->
+        <nav>
+            <ul class="pagination justify-content-center mt-4" id="pedidoPagination"></ul>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/site.js" asp-append-version="true"></script>
 }
-    </tbody>
-</table>

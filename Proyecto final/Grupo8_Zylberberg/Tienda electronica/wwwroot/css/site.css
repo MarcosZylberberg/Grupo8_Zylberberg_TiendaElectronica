@@ -29,9 +29,11 @@ body > .container {
   Hero (pantalla de bienvenida)
 ---------------------------------------------------*/
 .hero-section {
+    width: 100%;
+    /* 16:9 es una proporción común; cámbiala si prefieres otra */
+    aspect-ratio: 16 / 9;
     position: relative;
     background: url('/images/imagenIndex1.png') center/cover no-repeat;
-    height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -39,13 +41,16 @@ body > .container {
     color: var(--color-white);
 }
 
+/* Capa semitransparente encima del fondo */
 .hero-section::before {
     content: "";
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
+    z-index: 0;
 }
 
+/* Contenido por encima del overlay */
 .hero-section .container {
     position: relative;
     z-index: 1;
@@ -67,24 +72,38 @@ body > .container {
 /*--------------------------------------------------
   Galería de productos destacados
 ---------------------------------------------------*/
-.product-gallery {
-    background-color: var(--color-light-gray);
-    padding: 3rem 0;
+.product-gallery .product-scroll {
+    display: flex;
+    flex-wrap: nowrap; /* nada de wrapping */
+    overflow-x: auto; /* scroll horizontal */
+    gap: 1rem; /* separación entre tarjetas */
+    padding-bottom: 1rem; /* espacio para el scrollbar */
+    -webkit-overflow-scrolling: touch; /* momentum en iOS */
 }
 
-.product-gallery h2 {
-    color: var(--color-dark-gray);
-    margin-bottom: 2rem;
+.product-gallery .product-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.product-gallery .product-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--color-gray);
+    border-radius: 3px;
+}
+
+/* Cada tarjeta ocupa un ancho fijo y no encoge */
+.product-gallery .product-scroll .card {
+    flex: 0 0 300px; /* ancho fijo, ajusta a tu gusto */
+    max-width: 300px;
 }
 
 /* --------------------------------------------------
    Ajuste para que la imagen cubra toda la .image-card
 ----------------------------------------------------*/
 .image-card {
-    /* Define aquí la altura que quieras que ocupe la imagen */
-    height: 250px;
     width: 100%;
-    position: relative; /* ya lo tienes, pero por si acaso */
+    /* 4:3, pero cambia a lo que necesites (16/9, 1/1, etc.) */
+    aspect-ratio: 4 / 3;
+    position: relative;
     overflow: hidden;
 }
 
@@ -97,6 +116,10 @@ body > .container {
     height: 100%;
     object-fit: cover; /* recorta centrado y cubre todo */
     transition: transform .3s ease;
+}
+
+.image-card:hover img {
+    transform: scale(1.05);
 }
 
 /*--------------------------------------------------
@@ -139,6 +162,24 @@ body > .container {
 
 .footer a:hover {
     color: var(--color-green-dark);
+}
+
+/*--------------------------------------------------
+  Productos Index
+---------------------------------------------------*/
+/* Asegura que .product-item use el grid de Bootstrap pero ligeramente más apretado */
+.product-item .card {
+    /* Reduce el padding interno si hace falta */
+    padding: 0;
+}
+
+/* Opcional: ajusta el tamaño de fuente para que entre más texto */
+.product-item .card-title {
+    font-size: 0.9rem;
+}
+
+.product-item .card-text {
+    font-size: 0.85rem;
 }
 
 /*--------------------------------------------------

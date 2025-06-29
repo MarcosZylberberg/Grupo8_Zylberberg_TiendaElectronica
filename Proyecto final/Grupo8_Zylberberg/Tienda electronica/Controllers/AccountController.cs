@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Tienda_electronica.Context;
@@ -37,10 +38,12 @@ namespace Tienda_electronica.Controllers
             }
 
             // 4) Crea la cookie
+            var role = (user is Cliente) ? "Cliente" : "Usuario";
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.username),
-                new Claim("IdUsuario", user.IdUsuario.ToString())
+                new Claim("IdUsuario", user.IdUsuario.ToString()),
+                new Claim(ClaimTypes.Role, role)
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(
@@ -58,7 +61,7 @@ namespace Tienda_electronica.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             // Determinar URL de retorno
-            string referer = Request.Headers["Referer"].ToString();
+            string referer = Url.Action("Index", "Home");
             if (string.IsNullOrEmpty(referer))
             {
                 referer = Url.Action("Index", "Home");

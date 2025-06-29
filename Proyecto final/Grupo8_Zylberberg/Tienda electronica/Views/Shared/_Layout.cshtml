@@ -12,52 +12,119 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-dark bg-black border-bottom mb-3">
             <div class="container">
-                <!-- Marca en verde cálido -->
                 <a class="navbar-brand text-green fw-bold"
                    asp-controller="Home" asp-action="Index">
                     Okidoki Tienda Electrónica
                 </a>
-
                 <button class="navbar-toggler" type="button"
                         data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto"></ul>
-
                     <ul class="navbar-nav ms-auto">
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
+                            <!-- Productos -->
+                            @if (User.IsInRole("Usuario"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-white"
+                                       href="#" id="productosDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        Productos
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="productosDropdown">
+                                        <li>
+                                            <a class="dropdown-item"
+                                               asp-controller="Productos" asp-action="Index">
+                                                Ver productos
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               asp-controller="Productos" asp-action="Create">
+                                                Agregar producto
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white"
+                                       asp-controller="Productos" asp-action="Index">
+                                        Productos
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Pedidos / Mis Pedidos -->
+                            <li class="nav-item">
+                                <a class="nav-link text-white"
+                                   asp-controller="Pedidos" asp-action="Index">
+                                    @(User.IsInRole("Cliente") ? "Mis Pedidos" : "Pedidos")
+                                </a>
+                            </li>
+
+                            <!-- Sólo admins: gestión de usuarios -->
+                            @if (User.IsInRole("Usuario"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white"
+                                       asp-controller="Usuarios" asp-action="Index">
+                                        Usuarios
+                                    </a>
+                                </li>
+                            }
+
+                            <!-- Dropdown de usuario -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white"
+                                   href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hola, @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Usuarios"
+                                           asp-action="Details"
+                                           asp-route-id="@(User.FindFirst("IdUsuario").Value)">
+                                            Ver perfil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Usuarios"
+                                           asp-action="Edit"
+                                           asp-route-id="@(User.FindFirst("IdUsuario").Value)">
+                                            Editar perfil
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                Cerrar sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Invitados -->
                             <li class="nav-item">
                                 <a class="nav-link text-white"
                                    asp-controller="Productos" asp-action="Index">
                                     Productos
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white"
-                                   asp-controller="Home" asp-action="Contact">
-                                    Contacto
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <span class="nav-link text-gray">
-                                    Hola, @User.Identity.Name
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="nav-link btn btn-link text-white">
-                                        Cerrar sesión
-                                    </button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
                             <li class="nav-item">
                                 <a class="nav-link text-white"
                                    href="#" data-bs-toggle="modal" data-bs-target="#LoginModal">

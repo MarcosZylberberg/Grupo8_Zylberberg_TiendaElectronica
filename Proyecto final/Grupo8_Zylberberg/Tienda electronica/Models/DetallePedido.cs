@@ -11,12 +11,16 @@ namespace Tienda_electronica.Models
         public int IdDetalle { get; set; }
 
         [Required]
+        [ForeignKey(nameof(Pedido))]   // <- aquí le indico a EF que use IdPedido
         public int IdPedido { get; set; }
-        public Pedido Pedido { get; set; }
+
+        public Pedido Pedido { get; set; }  // navegación
 
         [Required]
+        [ForeignKey(nameof(Producto))]
         public int IdProducto { get; set; }
-        public Producto Producto { get; set; }
+
+        public Producto Producto { get; set; }  // navegación
 
         [Required, Range(1, int.MaxValue)]
         public int Cantidad { get; set; }

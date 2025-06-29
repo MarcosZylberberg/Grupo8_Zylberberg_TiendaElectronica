@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tienda_electronica.Context;
 
@@ -11,9 +12,11 @@ using Tienda_electronica.Context;
 namespace Tienda_electronica.Migrations
 {
     [DbContext(typeof(TiendaElectronicaDatabaseContext))]
-    partial class TiendaElectronicaDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250628233028_RemoveClientePedido")]
+    partial class RemoveClientePedido
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,15 +42,18 @@ namespace Tienda_electronica.Migrations
                     b.Property<int>("IdProducto")
                         .HasColumnType("int");
 
+                    b.Property<int>("PedidoIdPedido")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("PrecioUnitario")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdDetalle");
 
-                    b.HasIndex("IdPedido");
-
                     b.HasIndex("IdProducto");
+
+                    b.HasIndex("PedidoIdPedido");
 
                     b.ToTable("Detalles");
                 });
@@ -66,6 +72,9 @@ namespace Tienda_electronica.Migrations
                     b.Property<int>("IdCliente")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UsuarioIdUsuario")
+                        .HasColumnType("int");
+
                     b.Property<bool>("completado")
                         .HasColumnType("bit");
 
@@ -74,7 +83,7 @@ namespace Tienda_electronica.Migrations
 
                     b.HasKey("IdPedido");
 
-                    b.HasIndex("IdCliente");
+                    b.HasIndex("UsuarioIdUsuario");
 
                     b.ToTable("Pedidos");
                 });
@@ -172,15 +181,15 @@ namespace Tienda_electronica.Migrations
 
             modelBuilder.Entity("Tienda_electronica.Models.DetallePedido", b =>
                 {
-                    b.HasOne("Tienda_electronica.Models.Pedido", "Pedido")
-                        .WithMany("Detalles")
-                        .HasForeignKey("IdPedido")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Tienda_electronica.Models.Producto", "Producto")
                         .WithMany()
                         .HasForeignKey("IdProducto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tienda_electronica.Models.Pedido", "Pedido")
+                        .WithMany("Detalles")
+                        .HasForeignKey("PedidoIdPedido")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -191,13 +200,9 @@ namespace Tienda_electronica.Migrations
 
             modelBuilder.Entity("Tienda_electronica.Models.Pedido", b =>
                 {
-                    b.HasOne("Tienda_electronica.Models.Cliente", "Cliente")
+                    b.HasOne("Tienda_electronica.Models.Usuario", null)
                         .WithMany("Pedidos")
-                        .HasForeignKey("IdCliente")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
+                        .HasForeignKey("UsuarioIdUsuario");
                 });
 
             modelBuilder.Entity("Tienda_electronica.Models.Pedido", b =>
@@ -205,7 +210,7 @@ namespace Tienda_electronica.Migrations
                     b.Navigation("Detalles");
                 });
 
-            modelBuilder.Entity("Tienda_electronica.Models.Cliente", b =>
+            modelBuilder.Entity("Tienda_electronica.Models.Usuario", b =>
                 {
                     b.Navigation("Pedidos");
                 });
