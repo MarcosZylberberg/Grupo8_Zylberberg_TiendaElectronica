@@ -29,5 +29,7 @@ namespace Tienda_electronica.Models
 
         [Precision(18, 2)]
         public decimal PrecioUnitario { get; set; }
+        [Precision(18, 2)]
+        public decimal Subtotal { get; set; }
     }
 }

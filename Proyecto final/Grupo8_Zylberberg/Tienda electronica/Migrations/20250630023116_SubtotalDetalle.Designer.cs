@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tienda_electronica.Context;
 
@@ -11,9 +12,11 @@ using Tienda_electronica.Context;
 namespace Tienda_electronica.Migrations
 {
     [DbContext(typeof(TiendaElectronicaDatabaseContext))]
-    partial class TiendaElectronicaDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250630023116_SubtotalDetalle")]
+    partial class SubtotalDetalle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,10 +72,6 @@ namespace Tienda_electronica.Migrations
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("completado")
                         .HasColumnType("bit");

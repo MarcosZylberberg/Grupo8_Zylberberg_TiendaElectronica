@@ -7,6 +7,19 @@
 }
 
 <div class="container py-5">
+    @* Mensajes de éxito/error *@
+    @if (TempData["ErrorStock"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorStock"]
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
     <h1 class="mb-4">Mis Pedidos</h1>
 
     @if (!Model.Any())
@@ -76,6 +89,29 @@
                                                 <td class="text-end det-subtotal">
                                                     @((det.Cantidad * det.PrecioUnitario).ToString("C"))
                                                 </td>
+                                                <td class="text-center">
+                                                    @* Solo si el pedido NO está completado permitimos eliminar *@
+                                                    @if (!pedido.completado)
+                                                    {
+                                                        <a asp-controller="DetallePedidos"    @* o "DetallePedidos" según el nombre de tu clase *@
+                                                        asp-action="Delete"
+                                                        asp-route-pedidoId="@pedido.IdPedido"
+                                                        asp-route-detalleId="@det.IdDetalle"
+                                                        class="btn btn-sm btn-danger">
+                                                            Eliminar
+                                                        </a>
+                                                        <form asp-action="Finalize"
+                                                                asp-controller="Pedidos"
+                                                                asp-route-id="@pedido.IdPedido"
+                                                                method="post"
+                                                                class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <button type="submit" class="btn btn-success w-100">
+                                                                Finalizar compra
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>
@@ -95,6 +131,16 @@
                                        class="btn btn-sm btn-outline-secondary w-100 mb-2">
                                         Editar pedido
                                     </a>
+                                    <form asp-action="Delete"
+                                            asp-controller="Pedidos"
+                                            asp-route-id="@pedido.IdPedido"
+                                            method="post"
+                                            class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-success w-100">
+                                            Eliminar Pedido
+                                        </button>
+                                    </form>
                                 }
                             </div>
                         </div>

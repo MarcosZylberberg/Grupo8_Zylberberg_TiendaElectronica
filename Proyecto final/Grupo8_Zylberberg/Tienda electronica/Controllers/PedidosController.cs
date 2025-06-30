@@ -120,6 +120,54 @@ namespace Tienda_electronica.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Finalize(int id)
+        {
+            var pedido = await _context.Pedidos
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.Producto)
+                .FirstOrDefaultAsync(p => p.IdPedido == id);
+
+            if (pedido == null)
+                return NotFound();
+            if (pedido.completado)
+                return BadRequest("El pedido ya está completado.");
+
+            // 1) Validar stock
+            var sinStock = pedido.Detalles
+                .Where(d => d.Cantidad > d.Producto.CantidadStock)
+                .Select(d => d.Producto.Nombre)
+                .ToList();
+
+            if (sinStock.Any())
+            {
+                TempData["ErrorStock"] = "No hay stock para: " + string.Join(", ", sinStock);
+                return RedirectToAction(nameof(Index));
+            }
+
+            // 2) Descontar stock y calcular Subtotal
+            foreach (var det in pedido.Detalles)
+            {
+                det.Producto.CantidadStock -= det.Cantidad;
+
+                // Asigna y persiste el Subtotal si lo tienes en tu modelo
+                det.Subtotal = det.Cantidad * det.PrecioUnitario;
+            }
+
+            // 3) Marca pedido como completado
+            pedido.completado = true;
+
+            // 4) Calcula y asigna el Total en la cabecera del pedido
+            pedido.Total = pedido.Detalles.Sum(d => d.Subtotal);
+
+            // 5) Guarda TODO en una sola transacción
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Compra finalizada con éxito.";
+            return RedirectToAction(nameof(Index));
+        }
+
 
         // Pseudocódigo:
         // 1. Obtener el usuario actual (User).
@@ -162,7 +210,10 @@ namespace Tienda_electronica.Controllers
             }
 
             // Si el usuario no tiene el rol "Cliente", devolver todos los pedidos
-            var todosLosPedidos = await _context.Pedidos.ToListAsync();
+            var todosLosPedidos = await _context.Pedidos
+                .Include(p => p.Detalles)
+                .ThenInclude(d => d.Producto)
+                .ToListAsync();
             return View(todosLosPedidos);
         }
 

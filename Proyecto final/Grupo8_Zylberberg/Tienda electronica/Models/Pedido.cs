@@ -27,6 +27,6 @@ namespace Tienda_electronica.Models
         public ICollection<DetallePedido> Detalles { get; set; } = new List<DetallePedido>();
 
         [Precision(18, 2)]
-        public decimal Total => Detalles.Sum(d => d.PrecioUnitario * d.Cantidad);
+        public decimal Total { get; set; }
     }
 }
