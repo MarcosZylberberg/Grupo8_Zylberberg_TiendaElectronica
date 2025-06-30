@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tienda_electronica.Context;
 
@@ -11,9 +12,11 @@ using Tienda_electronica.Context;
 namespace Tienda_electronica.Migrations
 {
     [DbContext(typeof(TiendaElectronicaDatabaseContext))]
-    partial class TiendaElectronicaDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250629225827_CLaseDeNegocioPedidosIndexViewModel")]
+    partial class CLaseDeNegocioPedidosIndexViewModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace Tienda_electronica.Migrations
 
                     b.HasIndex("IdProducto");
 
-                    b.ToTable("Detalles", (string)null);
+                    b.ToTable("Detalles");
                 });
 
             modelBuilder.Entity("Tienda_electronica.Models.Pedido", b =>
@@ -76,7 +79,7 @@ namespace Tienda_electronica.Migrations
 
                     b.HasIndex("IdCliente");
 
-                    b.ToTable("Pedidos", (string)null);
+                    b.ToTable("Pedidos");
                 });
 
             modelBuilder.Entity("Tienda_electronica.Models.Producto", b =>
@@ -110,7 +113,7 @@ namespace Tienda_electronica.Migrations
 
                     b.HasKey("IdProducto");
 
-                    b.ToTable("Productos", (string)null);
+                    b.ToTable("Productos");
                 });
 
             modelBuilder.Entity("Tienda_electronica.Models.Usuario", b =>
@@ -144,7 +147,7 @@ namespace Tienda_electronica.Migrations
 
                     b.HasKey("IdUsuario");
 
-                    b.ToTable("Usuarios", (string)null);
+                    b.ToTable("Usuarios");
 
                     b.HasDiscriminator().HasValue("Usuario");
 

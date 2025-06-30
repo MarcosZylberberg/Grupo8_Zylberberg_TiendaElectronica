@@ -135,35 +135,36 @@ namespace Tienda_electronica.Controllers
         {
             if (User.IsInRole("Cliente"))
             {
-                // Intentar obtener el IdUsuario del claim
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                int userId;
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out userId))
-                {
-                    // Fallback: buscar por username
-                    var username = User.Identity?.Name;
-                    if (string.IsNullOrEmpty(username))
-                        return Unauthorized();
+                if (!int.TryParse(userIdStr, out var userId))
+                    return Unauthorized();
 
-                    var userEntity = await _context.Usuarios
-                        .SingleOrDefaultAsync(u => u.username == username);
-                    if (userEntity == null)
-                        return Unauthorized();
-
-                    userId = userEntity.IdUsuario;
-                }
-
-                var pedidosCliente = await _context.Pedidos
+                var todos = await _context.Pedidos
                     .Where(p => p.IdCliente == userId)
-                    .Include(p => p.Detalles)               // traigo la colección Detalles
-                        .ThenInclude(d => d.Producto)
+                    .Include(p => p.Detalles).ThenInclude(d => d.Producto)
+                    .OrderByDescending(p => p.Fecha)
                     .ToListAsync();
-                return View(pedidosCliente);
+
+                var vm = new PedidosIndexViewModel
+                {
+                    Activos = todos.Where(p => !p.completado).ToList(),
+                    Completados = todos.Where(p => p.completado).ToList()
+                };
+                return View(vm);
             }
 
-            // Si el usuario no tiene el rol "Cliente", devolver todos los pedidos
-            var todosLosPedidos = await _context.Pedidos.ToListAsync();
-            return View(todosLosPedidos);
+            // Si el usuario no tiene el rol "Cliente", devolver todos los pedidos activos y completados
+            var todosLosPedidos = await _context.Pedidos
+                .Include(p => p.Detalles).ThenInclude(d => d.Producto)
+                .OrderByDescending(p => p.Fecha)
+                .ToListAsync();
+
+            var vmAdmin = new PedidosIndexViewModel
+            {
+                Activos = todosLosPedidos.Where(p => !p.completado).ToList(),
+                Completados = todosLosPedidos.Where(p => p.completado).ToList()
+            };
+            return View(vmAdmin);
         }
 
         // GET: Pedidos/Details/5

@@ -1,5 +1,4 @@
-﻿@model IEnumerable<Tienda_electronica.Models.Pedido>
-
+﻿@model Tienda_electronica.Models.PedidosIndexViewModel
 @{
     ViewData["Title"] = "Mis Pedidos";
     Layout = "_Layout";
@@ -9,112 +8,113 @@
 <div class="container py-5">
     <h1 class="mb-4">Mis Pedidos</h1>
 
-    @if (!Model.Any())
+    @if (!Model.Activos.Any() && !Model.Completados.Any())
     {
         <div class="alert alert-info">
             No tienes pedidos todavía.
             <a asp-controller="Productos" asp-action="Index">Ver productos</a>
         </div>
+        return;
     }
-    else
-    {
-        <div class="row g-4" id="pedidoContainer">
-            @foreach (var pedido in Model)
-            {
-                <div class="col-sm-12 col-md-6 pedido-card">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-dark text-white">
-                            <div class="d-flex justify-content-between">
+
+    <!-- Navegación de pestañas -->
+    <ul class="nav nav-tabs mb-4" id="tabsPedidos" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-activos"
+                    data-bs-toggle="tab" data-bs-target="#pane-activos"
+                    type="button" role="tab">
+                Activos (@Model.Activos.Count)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-completados"
+                    data-bs-toggle="tab" data-bs-target="#pane-completados"
+                    type="button" role="tab">
+                Completados (@Model.Completados.Count)
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Activos -->
+        <div class="tab-pane fade show active" id="pane-activos" role="tabpanel">
+            <div class="row g-4">
+                @foreach (var pedido in Model.Activos)
+                {
+                    <div class="col-sm-12 col-md-6">
+                        <!-- Aquí reutilizas tu card de pedido, o la vuelves a pegar -->
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-warning text-dark">
                                 <strong>Pedido #@pedido.IdPedido</strong>
-                                @if (pedido.completado)
-                                {
-                                    <span class="badge bg-success">Completado</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Abierto</span>
-                                }
+                                <span class="badge bg-light text-dark float-end">Abierto</span><br />
+                                <small>@pedido.Fecha:g</small>
                             </div>
-                            <small>Fecha: @pedido.Fecha.ToString("g")</small>
-                        </div>
-
-                        <div class="card-body d-flex flex-column">
-                            <h6 class="mb-3">Ítems (@pedido.Detalles.Count)</h6>
-
-                            <div class="table-responsive mb-3" style="flex:1 0 auto;">
-                                <table class="table table-sm align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Producto</th>
-                                            <th class="text-center">Cantidad</th>
-                                            <th class="text-end">Subtotal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var det in pedido.Detalles)
-                                        {
-                                            <tr>
-                                                <td>@det.Producto.Nombre</td>
-                                                <td class="text-center" style="width:120px;">
-                                                    @if (!pedido.completado)
-                                                    {
-                                                        <input
-                                                            type="number"
-                                                            name="cantidad"
-                                                            class="form-control form-control-sm cantidad-input"
-                                                            style="width:60px; margin:auto;"
-                                                            min="1"
-                                                            value="@det.Cantidad"
-                                                            data-unit-price="@det.PrecioUnitario"
-                                                        />
-                                                    }
-                                                    else
-                                                    {
-                                                        @det.Cantidad
-                                                    }
-                                                </td>
-                                                <td class="text-end det-subtotal">
-                                                    @((det.Cantidad * det.PrecioUnitario).ToString("C"))
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="mt-auto">
-                                <a asp-action="Details"
-                                   asp-route-id="@pedido.IdPedido"
-                                   class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                    Ver detalles completos
-                                </a>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-3">
+                                    @foreach (var d in pedido.Detalles)
+                                    {
+                                        <li>
+                                            @d.Producto.Nombre
+                                            <span class="badge bg-secondary">@d.Cantidad×</span>
+                                        </li>
+                                    }
+                                </ul>
+                                <a asp-action="Details" asp-route-id="@pedido.IdPedido"
+                                   class="btn btn-sm btn-outline-primary">Ver detalles</a>
                                 @if (esUsuario)
                                 {
-                                    <a asp-action="Edit"
-                                       asp-route-id="@pedido.IdPedido"
-                                       class="btn btn-sm btn-outline-secondary w-100 mb-2">
-                                        Editar pedido
-                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@pedido.IdPedido" method="post" class="d-inline ms-2" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este pedido?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
                                 }
                             </div>
-                        </div>
-
-                        <div class="card-footer text-end">
-                            <strong>Total: </strong>
-                            <span class="pedido-total">@pedido.Total.ToString("C")</span>
+                            <div class="card-footer text-end">
+                                <strong>Total:</strong> @pedido.Total.ToString("C")
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
 
-        <!-- paginación -->
-        <nav>
-            <ul class="pagination justify-content-center mt-4" id="pedidoPagination"></ul>
-        </nav>
-    }
+        <!-- Completados -->
+        <div class="tab-pane fade" id="pane-completados" role="tabpanel">
+            <div class="row g-4">
+                @foreach (var pedido in Model.Completados)
+                {
+                    <div class="col-sm-12 col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <strong>Pedido #@pedido.IdPedido</strong>
+                                <span class="badge bg-light text-dark float-end">Completado</span><br />
+                                <small>@pedido.Fecha:g</small>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-3">
+                                    @foreach (var d in pedido.Detalles)
+                                    {
+                                        <li>
+                                            @d.Producto.Nombre
+                                            <span class="badge bg-secondary">@d.Cantidad×</span>
+                                        </li>
+                                    }
+                                </ul>
+                                <a asp-action="Details" asp-route-id="@pedido.IdPedido"
+                                   class="btn btn-sm btn-outline-primary">Ver detalles</a>
+                                @if (esUsuario)
+                                {
+                                    <form asp-action="Delete" asp-route-id="@pedido.IdPedido" method="post" class="d-inline ms-2" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este pedido?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
+                                }
+                            </div>
+                            <div class="card-footer text-end">
+                                <strong>Total:</strong> @pedido.Total.ToString("C")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
-
-@section Scripts {
-    <script src="~/js/site.js" asp-append-version="true"></script>
-}
