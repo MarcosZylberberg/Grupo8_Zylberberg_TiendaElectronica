@@ -83,33 +83,23 @@
                                                     }
                                                     else
                                                     {
+                                                        @* Mostrar la cantidad almacenada en la base de datos *@
                                                         @det.Cantidad
                                                     }
                                                 </td>
                                                 <td class="text-end det-subtotal">
-                                                    @((det.Cantidad * det.PrecioUnitario).ToString("C"))
+                                                    @( det.Subtotal.ToString("C") )
                                                 </td>
                                                 <td class="text-center">
                                                     @* Solo si el pedido NO está completado permitimos eliminar *@
                                                     @if (!pedido.completado)
                                                     {
-                                                        <a asp-controller="DetallePedidos"    @* o "DetallePedidos" según el nombre de tu clase *@
-                                                        asp-action="Delete"
-                                                        asp-route-pedidoId="@pedido.IdPedido"
-                                                        asp-route-detalleId="@det.IdDetalle"
-                                                        class="btn btn-sm btn-danger">
+                                                        <a asp-controller="DetallePedidos"    
+                                                           asp-action="Delete"
+                                                           asp-route-id="@det.IdDetalle"
+                                                           class="btn btn-sm btn-danger">
                                                             Eliminar
                                                         </a>
-                                                        <form asp-action="Finalize"
-                                                                asp-controller="Pedidos"
-                                                                asp-route-id="@pedido.IdPedido"
-                                                                method="post"
-                                                                class="d-inline">
-                                                            @Html.AntiForgeryToken()
-                                                            <button type="submit" class="btn btn-success w-100">
-                                                                Finalizar compra
-                                                            </button>
-                                                        </form>
                                                     }
                                                 </td>
                                             </tr>
@@ -122,15 +112,33 @@
                                 <a asp-action="Details"
                                    asp-route-id="@pedido.IdPedido"
                                    class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                    Ver detalles completos
+                                    Ver detalles
                                 </a>
-                                @if (esUsuario)
+                                @if (!pedido.completado)
                                 {
-                                    <a asp-action="Edit"
-                                       asp-route-id="@pedido.IdPedido"
-                                       class="btn btn-sm btn-outline-secondary w-100 mb-2">
-                                        Editar pedido
-                                    </a>
+                                    <form asp-action="Delete"
+                                            asp-controller="Pedidos"
+                                            asp-route-id="@pedido.IdPedido"
+                                            method="post"
+                                            class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger w-100">
+                                            Eliminar Pedido
+                                        </button>
+                                    </form>
+                                    <form asp-action="Finalize"
+                                            asp-controller="Pedidos"
+                                            asp-route-id="@pedido.IdPedido"
+                                            method="post"
+                                            class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-success w-100">
+                                            Finalizar compra
+                                        </button>
+                                    </form>
+                                }
+                                @if(esUsuario)
+                                {
                                     <form asp-action="Delete"
                                             asp-controller="Pedidos"
                                             asp-route-id="@pedido.IdPedido"

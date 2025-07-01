@@ -146,7 +146,7 @@ namespace Tienda_electronica.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Pedidos");
         }
 
         private bool DetallePedidoExists(int id)

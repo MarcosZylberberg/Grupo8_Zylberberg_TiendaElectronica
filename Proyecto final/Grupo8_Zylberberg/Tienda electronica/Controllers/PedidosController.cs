@@ -43,13 +43,6 @@ namespace Tienda_electronica.Controllers
                 userId = userEntity.IdUsuario;
             }
 
-            // 1) Cargar cliente
-            var cliente = await _context.Usuarios
-                .OfType<Cliente>()
-                .SingleOrDefaultAsync(u => u.IdUsuario == userId);
-            if (cliente == null)
-                return Unauthorized();
-
             // 2) Carga (o crea) el pedido “abierto”
             var pedido = await _context.Pedidos
                 .Include(p => p.Detalles)
@@ -99,7 +92,7 @@ namespace Tienda_electronica.Controllers
             }
             else
             {
-                // 2b) Si no existe, créalo de nuevo
+                // 2b) Si no existe, créalo 
                 detalle = new DetallePedido
                 {
                     IdPedido = pedidoId,
@@ -118,6 +111,8 @@ namespace Tienda_electronica.Controllers
                     pedido.Detalles.Add(detalle);
                 }
             }
+            // Guardar los cambios en la base de datos
+            await _context.SaveChangesAsync();
         }
 
         [HttpPost]
@@ -150,87 +145,73 @@ namespace Tienda_electronica.Controllers
             foreach (var det in pedido.Detalles)
             {
                 det.Producto.CantidadStock -= det.Cantidad;
-
-                // Asigna y persiste el Subtotal si lo tienes en tu modelo
                 det.Subtotal = det.Cantidad * det.PrecioUnitario;
             }
 
             // 3) Marca pedido como completado
             pedido.completado = true;
 
-            // 4) Calcula y asigna el Total en la cabecera del pedido
+            // 4) Calcula y asigna el Total 
             pedido.Total = pedido.Detalles.Sum(d => d.Subtotal);
 
-            // 5) Guarda TODO en una sola transacción
+            // Guardar los cambios en la base de datos
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Compra finalizada con éxito.";
             return RedirectToAction(nameof(Index));
         }
 
-
-        // Pseudocódigo:
-        // 1. Obtener el usuario actual (User).
-        // 2. Si el usuario tiene el rol "Cliente":
-        //    - Obtener su IdUsuario (por claim o username).
-        //    - Filtrar los pedidos por IdCliente == IdUsuario.
-        // 3. Si el usuario tiene el rol "Usuario" (o cualquier otro):
-        //    - Devolver todos los pedidos.
-        // 4. Retornar la vista con la lista correspondiente.
-
-        [Authorize]
+        [Authorize(Roles = "Cliente,Usuario")]
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Cliente"))
-            {
-                // Intentar obtener el IdUsuario del claim
-                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                int userId;
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out userId))
-                {
-                    // Fallback: buscar por username
-                    var username = User.Identity?.Name;
-                    if (string.IsNullOrEmpty(username))
-                        return Unauthorized();
+            // 1) Intento leer el claim NameIdentifier de forma segura
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int userId;
+      
+            // Obtengo el username y busco el usuario en BD
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized();
 
-                    var userEntity = await _context.Usuarios
-                        .SingleOrDefaultAsync(u => u.username == username);
-                    if (userEntity == null)
-                        return Unauthorized();
+            var userEntity = await _context.Usuarios
+                .SingleOrDefaultAsync(u => u.username == username);
+            if (userEntity == null)
+                return Unauthorized();
 
-                    userId = userEntity.IdUsuario;
-                }
-
-                var pedidosCliente = await _context.Pedidos
-                    .Where(p => p.IdCliente == userId)
-                    .Include(p => p.Detalles)               // traigo la colección Detalles
-                        .ThenInclude(d => d.Producto)
-                    .ToListAsync();
-                return View(pedidosCliente);
-            }
-
-            // Si el usuario no tiene el rol "Cliente", devolver todos los pedidos
-            var todosLosPedidos = await _context.Pedidos
+            userId = userEntity.IdUsuario;
+            
+            // Siempre cargamos detalles + producto
+            var query = _context.Pedidos
                 .Include(p => p.Detalles)
-                .ThenInclude(d => d.Producto)
+                    .ThenInclude(d => d.Producto)
+                .AsQueryable();
+
+            if (userEntity is Cliente)
+            {
+                // Si es cliente, sólo sus pedidos
+                query = query.Where(p => p.IdCliente == userId);
+            }
+            // Si es Usuario (admin), dejamos query sin filtrar para que traiga todos
+
+            // Ordenamos: abiertos primero, luego completados más recientes
+            var pedidos = await query
+                .OrderBy(p => p.completado)
+                .ThenByDescending(p => p.Fecha)
                 .ToListAsync();
-            return View(todosLosPedidos);
+
+            return View(pedidos);
         }
 
-        // GET: Pedidos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var pedido = await _context.Pedidos
-                .FirstOrDefaultAsync(m => m.IdPedido == id);
-            if (pedido == null)
-            {
-                return NotFound();
-            }
+                .Include(p => p.Detalles)
+                    .ThenInclude(d => d.Producto)
+                .FirstOrDefaultAsync(p => p.IdPedido == id);
+
+            if (pedido == null) return NotFound();
 
             return View(pedido);
         }
@@ -344,6 +325,28 @@ namespace Tienda_electronica.Controllers
         private bool PedidoExists(int id)
         {
             return _context.Pedidos.Any(e => e.IdPedido == id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateQuantity(int detalleId, int cantidad)
+        {
+            // 1) Buscar el detalle
+            var detalle = await _context.Detalles.FindAsync(detalleId);
+            if (detalle == null)
+                return NotFound();
+
+            // 2) Actualizar la cantidad
+            detalle.Cantidad = cantidad;
+            await _context.SaveChangesAsync();
+
+            // 3) Calcular el nuevo subtotal y devolverlo en JSON
+            var nuevoSubtotal = detalle.Cantidad * detalle.PrecioUnitario;
+            return Json(new
+            {
+                success = true,
+                nuevoSubtotal = nuevoSubtotal
+            });
         }
     }
 }

@@ -1,42 +1,78 @@
 ﻿@model Tienda_electronica.Models.Pedido
+@using Microsoft.AspNetCore.Identity
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalles del Pedido";
+    var total = Model.Detalles?.Sum(i => i.Cantidad * i.PrecioUnitario) ?? 0;
+    bool esUsuario = User.IsInRole("Usuario");
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Detalles del Pedido</h2>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-4">
+                @if (esUsuario)
+                {
+                    <dt class="col-sm-3">Cliente</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.IdCliente)</dd>
+                }
+                <dt class="col-sm-3">Completado</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.completado)</dd>
+                <dt class="col-sm-3">Fecha</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Fecha)</dd>
+                <dt class="col-sm-3">Método de Pago</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.metodo)</dd>
+            </dl>
 
-<div>
-    <h4>Pedido</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdCliente)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdCliente)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.completado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.completado)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Fecha)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Fecha)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.metodo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.metodo)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdPedido">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <h4 class="mb-3">Artículos del Pedido</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th class="text-end">Cantidad</th>
+                            <th class="text-end">Precio Unitario</th>
+                            <th class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Detalles != null && Model.Detalles.Any())
+                        {
+                            foreach (var item in Model.Detalles)
+                            {
+                                <tr>
+                                    <td>@item.Producto.Nombre</td>
+                                    <td class="text-end">@item.Cantidad</td>
+                                    <td class="text-end">@item.PrecioUnitario.ToString("C")</td>
+                                    <td class="text-end">@((item.Cantidad * item.PrecioUnitario).ToString("C"))</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center">No hay artículos en este pedido.</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Total</th>
+                            <th class="text-end">@total.ToString("C")</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            @if (esUsuario)
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.IdPedido" class="btn btn-warning me-2">Editar</a>
+            }
+            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+        </div>
+    </div>
 </div>
