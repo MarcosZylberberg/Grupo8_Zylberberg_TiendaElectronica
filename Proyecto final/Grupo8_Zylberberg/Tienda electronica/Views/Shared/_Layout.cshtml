@@ -160,7 +160,6 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form asp-controller="Account" asp-action="Login" method="post">
-                    @Html.AntiForgeryToken()
                     <div class="modal-header">
                         <h5 class="modal-title">Iniciar sesión</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -235,6 +234,8 @@
           }
         });
     </script>
+    @Html.AntiForgeryToken()
+    @RenderBody()
     @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -131,7 +131,7 @@ namespace Tienda_electronica.Controllers
 
             // 1) Validar stock
             var sinStock = pedido.Detalles
-                .Where(d => d.Cantidad > d.Producto.CantidadStock)
+                .Where(predicate: d => d.Cantidad > d.Producto.CantidadStock)
                 .Select(d => d.Producto.Nombre)
                 .ToList();
 
@@ -145,7 +145,7 @@ namespace Tienda_electronica.Controllers
             foreach (var det in pedido.Detalles)
             {
                 det.Producto.CantidadStock -= det.Cantidad;
-                det.Subtotal = det.Cantidad * det.PrecioUnitario;
+                det.Subtotal = det.PrecioUnitario * det.Cantidad; 
             }
 
             // 3) Marca pedido como completado
@@ -331,21 +331,31 @@ namespace Tienda_electronica.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateQuantity(int detalleId, int cantidad)
         {
-            // 1) Buscar el detalle
-            var detalle = await _context.Detalles.FindAsync(detalleId);
-            if (detalle == null)
-                return NotFound();
+            // 1) Carga detalle + su pedido + todos los detalles
+            var detalle = await _context.Detalles
+                .Include(d => d.Pedido)
+                    .ThenInclude(p => p.Detalles)
+                .FirstOrDefaultAsync(d => d.IdDetalle == detalleId);
 
-            // 2) Actualizar la cantidad
+            if (detalle == null) return NotFound();
+
+            // 2) Actualiza cantidad y subtotal del detalle
             detalle.Cantidad = cantidad;
+            detalle.Subtotal = detalle.Cantidad * detalle.PrecioUnitario;
+
+            // 3) Recalcula el total del pedido
+            var pedido = detalle.Pedido;
+            pedido.Total = pedido.Detalles.Sum(d => d.Subtotal);
+
+            // 4) Persiste todo en un solo SaveChanges
             await _context.SaveChangesAsync();
 
-            // 3) Calcular el nuevo subtotal y devolverlo en JSON
-            var nuevoSubtotal = detalle.Cantidad * detalle.PrecioUnitario;
+            // 5) Devuelve nuevo subtotal y total
             return Json(new
             {
                 success = true,
-                nuevoSubtotal = nuevoSubtotal
+                nuevoSubtotal = detalle.Subtotal,
+                nuevoTotal = pedido.Total
             });
         }
     }
