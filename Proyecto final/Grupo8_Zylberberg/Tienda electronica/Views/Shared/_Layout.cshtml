@@ -158,11 +158,11 @@
     <!-- LOGIN MODAL -->
     <div class="modal fade" id="LoginModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="modal-content border-0">
                 <form asp-controller="Account" asp-action="Login" method="post">
-                    <div class="modal-header">
+                    <div class="modal-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
                         <h5 class="modal-title">Iniciar sesión</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         @if (TempData["LoginError"] != null)
@@ -178,50 +178,50 @@
                             <input id="loginPass" name="Password" type="password" class="form-control" />
                         </div>
                     </div>
-                    <div class="footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Entrar</button>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-black">Entrar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
+
     <!-- ===== REGISTER MODAL ===== -->
     <div class="modal fade" id="RegisterModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Registrarse</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog">
+        <div class="modal-content border-0">
+            <div class="modal-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
+                <h5 class="modal-title">Registrarse</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="registerType" id="optCliente" value="Cliente" />
+                    <label class="form-check-label" for="optCliente">Cliente</label>
                 </div>
-                <div class="modal-body">
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="registerType" id="optCliente" value="Cliente" />
-                        <label class="form-check-label" for="optCliente">Cliente</label>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="registerType" id="optUsuario" value="Usuario" />
-                        <label class="form-check-label" for="optUsuario">Usuario (Admin)</label>
-                    </div>
-                    <div id="adminCodeGroup" class="mb-3" style="display:none;">
-                        <label for="adminCode" class="form-label">Código de administrador</label>
-                        <input id="adminCode" type="password" class="form-control" placeholder="Ingresa el código" />
-                    </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="registerType" id="optUsuario" value="Usuario" />
+                    <label class="form-check-label" for="optUsuario">Usuario (Admin)</label>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button"
-                            class="btn btn-primary"
-                            id="registerContinueBtn"
-                            data-client-url="@Url.Action("Create", "Clientes")"
-                            data-admin-url="@Url.Action("Create", "Usuarios")">
-                        Continuar
-                    </button>
+                <div id="adminCodeGroup" class="mb-3" style="display:none;">
+                    <label for="adminCode" class="form-label">Código de administrador</label>
+                    <input id="adminCode" type="password" class="form-control" placeholder="Ingresa el código" />
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-black"
+                        id="registerContinueBtn"
+                        data-client-url="@Url.Action("Create", "Clientes")"
+                        data-admin-url="@Url.Action("Create", "Usuarios")">
+                    Continuar
+                </button>
             </div>
         </div>
     </div>
+</div>
+
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

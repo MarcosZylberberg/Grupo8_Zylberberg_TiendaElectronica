@@ -1,53 +1,62 @@
 ﻿@model Tienda_electronica.Models.Cliente
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Registro Cliente";
 }
 
-<div class="row">
-    <div class="col-12">
-        <div class="form-container">
-            <h1>Registro Cliente</h1>
-            <hr />
+<div class="container mt-5">
+    <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
+            <h2 class="mb-0 text-center">Registro Cliente</h2>
+        </div>
+        <div class="card-body">
             <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Mail" class="control-label"></label>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Mail" class="form-label"></label>
                     <input asp-for="Mail" class="form-control" />
                     <span asp-validation-for="Mail" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Direccion" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="Direccion" class="form-label"></label>
                     <input asp-for="Direccion" class="form-control" />
                     <span asp-validation-for="Direccion" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Telefono" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="Telefono" class="form-label"></label>
                     <input asp-for="Telefono" class="form-control" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="username" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="username" class="form-label"></label>
                     <input asp-for="username" class="form-control" />
                     <span asp-validation-for="username" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="password" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="password" class="form-label"></label>
                     <input asp-for="password" class="form-control" />
                     <span asp-validation-for="password" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="nombre" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="nombre" class="form-label"></label>
                     <input asp-for="nombre" class="form-control" />
                     <span asp-validation-for="nombre" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="apellido" class="control-label"></label>
+
+                <div class="mb-3">
+                    <label asp-for="apellido" class="form-label"></label>
                     <input asp-for="apellido" class="form-control" />
                     <span asp-validation-for="apellido" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
+
+                <div class="d-flex justify-content-start gap-2 mt-4">
+                    <input type="submit" value="Crear" class="btn btn-black" />
                 </div>
             </form>
         </div>
@@ -55,5 +64,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

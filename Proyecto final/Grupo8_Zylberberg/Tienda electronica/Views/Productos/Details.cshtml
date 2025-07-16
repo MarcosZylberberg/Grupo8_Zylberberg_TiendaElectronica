@@ -4,34 +4,34 @@
     ViewData["Title"] = "Detalles del Producto";
 }
 
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
             <h2 class="mb-0">Detalles del Producto</h2>
         </div>
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-8">
                     <dl class="row">
-                        <dt class="col-sm-4">
+                        <dt class="col-sm-4 text-muted">
                             @Html.DisplayNameFor(model => model.Nombre)
                         </dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Nombre)
                         </dd>
-                        <dt class="col-sm-4">
+                        <dt class="col-sm-4 text-muted">
                             @Html.DisplayNameFor(model => model.Descripcion)
                         </dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Descripcion)
                         </dd>
-                        <dt class="col-sm-4">
+                        <dt class="col-sm-4 text-muted">
                             @Html.DisplayNameFor(model => model.Precio)
                         </dt>
                         <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.Precio)
+                            @Model.Precio.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-AR"))
                         </dd>
-                        <dt class="col-sm-4">
+                        <dt class="col-sm-4 text-muted">
                             @Html.DisplayNameFor(model => model.CantidadStock)
                         </dt>
                         <dd class="col-sm-8">
@@ -42,7 +42,9 @@
                 <div class="col-md-4 d-flex align-items-center justify-content-center">
                     @if (!string.IsNullOrEmpty(Model.Imagen))
                     {
-                        <img src="~/images/@Model.Imagen" alt="Imagen del producto" class="img-fluid rounded border" style="max-height: 250px;" />
+                        <div class="image-card" style="max-height: 250px;">
+                            <img src="~/images/@Model.Imagen" alt="Imagen del producto" class="img-fluid rounded border" />
+                        </div>
                     }
                     else
                     {
@@ -50,9 +52,24 @@
                     }
                 </div>
             </div>
-            <div>
-                <a asp-action="Edit" asp-route-id="@Model?.IdProducto" class="btn btn-warning me-2">Editar</a>
-                <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+
+            <div class="d-flex justify-content-start gap-2">
+                @if (User.IsInRole("Usuario"))
+                {
+                    <a asp-action="Edit" asp-route-id="@Model?.IdProducto" class="btn btn-black">Editar</a>
+                }
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <form asp-controller="Pedidos"
+                    asp-action="AddToCart"
+                      asp-route-productoId="@Model.IdProducto"
+                      method="post"
+                      class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-black">Agregar al pedido</button>
+                </form>
+                }
+                <a asp-action="Index" class="btn btn-black">Volver a la lista</a>
             </div>
         </div>
     </div>

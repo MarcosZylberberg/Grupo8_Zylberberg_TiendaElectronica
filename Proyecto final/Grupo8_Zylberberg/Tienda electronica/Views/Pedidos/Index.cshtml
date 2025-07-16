@@ -22,7 +22,7 @@
     {
         <div class="alert alert-info">
             No tienes pedidos todavía.
-            <a asp-controller="Productos" asp-action="Index">Ver productos</a>
+            <a asp-controller="Productos" asp-action="Index" class="btn btn-black ms-2">Ver productos</a>
         </div>
     }
     else
@@ -30,11 +30,10 @@
         <div class="row g-4" id="pedidoContainer">
             @foreach (var pedido in Model)
             {
-                // añadimos la clase abierto si NO está completado
                 var estadoClass = pedido.completado ? "completado" : "abierto";
                 <div class="col-sm-12 col-md-6 pedido-card @estadoClass" data-pedido-id="@pedido.IdPedido">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-dark text-white">
+                    <div class="card h-100 shadow-sm border">
+                        <div class="card-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
                             <div class="d-flex justify-content-between">
                                 <strong>Pedido #@pedido.IdPedido</strong>
                                 @if (pedido.completado)
@@ -59,6 +58,7 @@
                                             <th>Producto</th>
                                             <th class="text-center">Cantidad</th>
                                             <th class="text-end">Subtotal</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -85,7 +85,7 @@
                                                 </td>
                                                 <td class="text-end det-subtotal">
                                                     @(det.Subtotal.ToString("C"))
-                                                </td>
+                                                </td>                                               
                                                 <td class="text-center">
                                                     @if (!pedido.completado)
                                                     {
@@ -104,48 +104,42 @@
                             </div>
 
                             <div class="mt-auto">
-                                <a asp-action="Details"
-                                   asp-route-id="@pedido.IdPedido"
-                                   class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                    Ver detalles
-                                </a>
+                                <div class="d-flex justify-content-start gap-2 flex-wrap">
+                                    <a asp-action="Details"
+                                       asp-route-id="@pedido.IdPedido"
+                                       class="btn btn-black">
+                                        Ver detalles
+                                    </a>
 
-                                @if (!pedido.completado)
-                                {
-                                    <form asp-action="Delete"
-                                          asp-controller="Pedidos"
-                                          asp-route-id="@pedido.IdPedido"
-                                          method="post"
-                                          class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-danger w-100">
-                                            Eliminar Pedido
-                                        </button>
-                                    </form>
-                                    <form asp-action="Finalize"
-                                          asp-controller="Pedidos"
-                                          asp-route-id="@pedido.IdPedido"
-                                          method="post"
-                                          class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-success w-100">
-                                            Finalizar compra
-                                        </button>
-                                    </form>
-                                }
-                                @if (esUsuario)
-                                {
-                                    <form asp-action="Delete"
-                                          asp-controller="Pedidos"
-                                          asp-route-id="@pedido.IdPedido"
-                                          method="post"
-                                          class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-success w-100">
-                                            Eliminar Pedido
-                                        </button>
-                                    </form>
-                                }
+                                    @if (!pedido.completado)
+                                    {
+                                        <form asp-action="Delete"
+                                              asp-controller="Pedidos"
+                                              asp-route-id="@pedido.IdPedido"
+                                              method="post" class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-black">Eliminar Pedido</button>
+                                        </form>
+                                        <form asp-action="Finalize"
+                                              asp-controller="Pedidos"
+                                              asp-route-id="@pedido.IdPedido"
+                                              method="post" class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-black">Finalizar compra</button>
+                                        </form>
+                                    }
+
+                                    @if (esUsuario)
+                                    {
+                                        <form asp-action="Delete"
+                                              asp-controller="Pedidos"
+                                              asp-route-id="@pedido.IdPedido"
+                                              method="post" class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-black">Eliminar Pedido</button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
                         </div>
 
@@ -158,7 +152,6 @@
             }
         </div>
 
-        <!-- paginación -->
         <nav>
             <ul class="pagination justify-content-center mt-4" id="pedidoPagination"></ul>
         </nav>

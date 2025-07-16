@@ -7,23 +7,25 @@
     bool esUsuario = User.IsInRole("Usuario");
 }
 
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
             <h2 class="mb-0">Detalles del Pedido</h2>
         </div>
         <div class="card-body">
             <dl class="row mb-4">
                 @if (esUsuario)
                 {
-                    <dt class="col-sm-3">Cliente</dt>
+                    <dt class="col-sm-3 text-muted">Cliente</dt>
                     <dd class="col-sm-9">@Html.DisplayFor(model => model.IdCliente)</dd>
                 }
-                <dt class="col-sm-3">Completado</dt>
+                <dt class="col-sm-3 text-muted">Completado</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.completado)</dd>
-                <dt class="col-sm-3">Fecha</dt>
+
+                <dt class="col-sm-3 text-muted">Fecha</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.Fecha)</dd>
-                <dt class="col-sm-3">Método de Pago</dt>
+
+                <dt class="col-sm-3 text-muted">Método de Pago</dt>
                 <dd class="col-sm-9">@Html.DisplayFor(model => model.metodo)</dd>
             </dl>
 
@@ -67,12 +69,13 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer text-end">
+
+        <div class="card-footer d-flex justify-content-end gap-2">
             @if (esUsuario)
             {
-                <a asp-action="Edit" asp-route-id="@Model?.IdPedido" class="btn btn-warning me-2">Editar</a>
+                <a asp-action="Edit" asp-route-id="@Model?.IdPedido" class="btn btn-black">Editar</a>
             }
-            <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+            <a asp-action="Index" class="btn btn-black">Volver a la lista</a>
         </div>
     </div>
 </div>

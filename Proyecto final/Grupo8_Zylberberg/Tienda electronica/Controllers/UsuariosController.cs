@@ -99,6 +99,7 @@ namespace Tienda_electronica.Controllers
                 {
                     _context.Update(usuario);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (DbUpdateConcurrencyException)
                 {

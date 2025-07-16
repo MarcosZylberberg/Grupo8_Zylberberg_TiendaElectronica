@@ -5,43 +5,47 @@
     Layout = "_Layout";
 }
 
-<div class="form-container">
-    <h1>@ViewData["Title"]</h1>
-    <hr />
-
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
-
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-        <div class="form-group">
-            <label asp-for="username" class="control-label"></label>
-            <input asp-for="username" class="form-control" />
-            <span asp-validation-for="username" class="text-danger"></span>
+<div class="container mt-5">
+    <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header" style="background-color: var(--color-dark-gray); color: var(--color-white);">
+            <h2 class="mb-0 text-center">Crear Usuario</h2>
         </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
 
-        <div class="form-group">
-            <label asp-for="password" class="control-label"></label>
-            <input asp-for="password" type="password" class="form-control" />
-            <span asp-validation-for="password" class="text-danger"></span>
-        </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-        <div class="form-group">
-            <label asp-for="nombre" class="control-label"></label>
-            <input asp-for="nombre" class="form-control" />
-            <span asp-validation-for="nombre" class="text-danger"></span>
-        </div>
+                <div class="mb-3">
+                    <label asp-for="username" class="form-label"></label>
+                    <input asp-for="username" class="form-control" />
+                    <span asp-validation-for="username" class="text-danger"></span>
+                </div>
 
-        <div class="form-group">
-            <label asp-for="apellido" class="control-label"></label>
-            <input asp-for="apellido" class="form-control" />
-            <span asp-validation-for="apellido" class="text-danger"></span>
-        </div>
+                <div class="mb-3">
+                    <label asp-for="password" class="form-label"></label>
+                    <input asp-for="password" type="password" class="form-control" />
+                    <span asp-validation-for="password" class="text-danger"></span>
+                </div>
 
-        <div class="form-group mt-4">
-            <button type="submit" class="btn btn-primary w-100">Crear</button>
+                <div class="mb-3">
+                    <label asp-for="nombre" class="form-label"></label>
+                    <input asp-for="nombre" class="form-control" />
+                    <span asp-validation-for="nombre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="apellido" class="form-label"></label>
+                    <input asp-for="apellido" class="form-control" />
+                    <span asp-validation-for="apellido" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-start gap-2 mt-4">
+                    <button type="submit" class="btn btn-black">Crear</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
 
 @section Scripts {
